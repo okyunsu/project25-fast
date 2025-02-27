@@ -1,0 +1,9 @@
+
+
+from com.okyunsu.esg_score.service.abstract_score import AbstractScore
+
+
+class HelloScore(AbstractScore):
+    
+    def handle(slef, **kwargs):
+        return "Hello User"    

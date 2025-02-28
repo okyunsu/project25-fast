@@ -1,0 +1,4 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary  # PostgreSQL과 연결할 때 필요

@@ -7,4 +7,4 @@ class AdminController:
         pass
 
     def hello_user(self,**kwargs):
-        return AdminFactory.create(strateg="hello_user",**kwargs)  
+        return AdminFactory.create(strategy="hello_user",**kwargs)  

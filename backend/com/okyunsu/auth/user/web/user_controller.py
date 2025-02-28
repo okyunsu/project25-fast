@@ -6,4 +6,4 @@ class UserController:
         pass
 
     def hello_user(self,**kwargs):
-        return UserFactory.create(strateg="hello_user",**kwargs)    
+        return UserFactory.create(strategy="hello_user",**kwargs)    

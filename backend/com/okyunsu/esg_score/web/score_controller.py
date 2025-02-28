@@ -8,4 +8,4 @@ class ScoreController:
         pass
 
     def hello_user(self,**kwargs):
-        return ScoreFactory.create(strateg="hello_user",**kwargs)  
+        return ScoreFactory.create(strategy="hello_user",**kwargs)  

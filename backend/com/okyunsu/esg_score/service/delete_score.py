@@ -1,4 +1,4 @@
-from com.okyunsu.auth.user.service.abstract_user import AbstractUser
+from com.okyunsu.account.user.service.abstract_user import AbstractUser
 
 
 class DeleteScore(AbstractUser):

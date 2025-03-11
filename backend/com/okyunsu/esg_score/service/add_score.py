@@ -1,7 +1,7 @@
-from com.okyunsu.auth.user.service.abstract_user import AbstractUser
+from com.okyunsu.account.user.service.abstract_user import AbstractUser
 
 
-class AddScore(AbstractUser):
+class createScore(AbstractUser):
     
     def handle(slef, **kwargs):
         pass

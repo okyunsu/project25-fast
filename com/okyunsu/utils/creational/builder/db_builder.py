@@ -3,6 +3,8 @@ import os
 from dotenv import load_dotenv
 from com.okyunsu.utils.creational.builder.query_builder import QueryBuilder
 from com.okyunsu.utils.creational.singleton import db_singleton
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
 
 # Async Database Builder
 class DatabaseBuilder:
@@ -47,6 +49,7 @@ class DatabaseBuilder:
 class AsyncDatabase:
     def __init__(self, pool):
         self.pool = pool
+        self.pending_entities = []  # 임시 저장소
 
     async def fetch(self, query: str, *args):
         async with self.pool.acquire() as connection:
@@ -58,6 +61,61 @@ class AsyncDatabase:
 
     async def close(self):
         await self.pool.close()
+        
+    # SQLAlchemy 스타일 메서드 구현 (ORM처럼 동작)
+    def add(self, entity):
+        """ORM 스타일로 엔티티 추가"""
+        print(f"✅ 엔티티 추가: {entity}")
+        self.pending_entities.append(entity)
+        return self
+        
+    async def commit(self):
+        """변경사항 커밋"""
+        print(f"✅ 커밋 시작 (대기 엔티티: {len(self.pending_entities)}개)")
+        try:
+            for entity in self.pending_entities:
+                # Customer 엔티티인 경우
+                if hasattr(entity, 'user_id') and hasattr(entity, 'email'):
+                    query = """
+                    INSERT INTO users (user_id, name, email, password)
+                    VALUES ($1, $2, $3, $4)
+                    RETURNING *
+                    """
+                    await self.execute(
+                        query,
+                        entity.user_id,
+                        entity.name,
+                        entity.email,
+                        entity.password
+                    )
+                    print(f"✅ 엔티티 저장 완료: {entity.user_id}")
+            
+            # 커밋 완료 후 목록 초기화
+            self.pending_entities = []
+            print("✅ 커밋 완료")
+            return True
+        except Exception as e:
+            print(f"❌ 커밋 실패: {str(e)}")
+            await self.rollback()
+            raise e
+            
+    async def rollback(self):
+        """변경사항 롤백"""
+        print("✅ 롤백 수행")
+        self.pending_entities = []
+        return self
+        
+    async def refresh(self, entity):
+        """엔티티 새로고침 (최신 정보 가져오기)"""
+        print(f"✅ 엔티티 새로고침: {entity}")
+        if hasattr(entity, 'user_id'):
+            query = "SELECT * FROM users WHERE user_id = $1"
+            result = await self.fetch(query, entity.user_id)
+            if result and len(result) > 0:
+                record = dict(result[0])
+                for key, value in record.items():
+                    setattr(entity, key, value)
+        return entity
 
 
 

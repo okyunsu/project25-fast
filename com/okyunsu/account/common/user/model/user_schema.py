@@ -5,7 +5,7 @@ class UserSchema(BaseModel):
     user_id: str
     email: EmailStr
     name: str
-    password: str = Field(..., min_length=8, max_length=50)
+    password: str = Field(..., min_length=4, max_length=50)
 
     class Config:
         orm_mode = True  # SQLAlchemy 객체를 자동 변환 가능

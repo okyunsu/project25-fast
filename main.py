@@ -5,13 +5,14 @@ from fastapi.responses import HTMLResponse
 from pytz import timezone
 from com.okyunsu.app_router import router as app_router
 from fastapi.middleware.cors import CORSMiddleware
-
+from com.okyunsu.auth.auth_router import router as auth_router
 # python -m uvicorn main:app --reload   faskapi 실행
 # http://127.0.0.1:8000/
 
 
 app = FastAPI()
 app.include_router(app_router, prefix="/api")
+app.include_router(auth_router, prefix="/api")
 
 app.add_middleware(
     CORSMiddleware,

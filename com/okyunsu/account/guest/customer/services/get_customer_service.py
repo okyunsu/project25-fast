@@ -1,4 +1,4 @@
-from com.okyunsu.account.guest.customer.storges.get_customer import get_all_customer, get_customer_by_id
+from com.okyunsu.account.guest.customer.storages.get_customer import get_all_customer, get_customer_by_id
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError

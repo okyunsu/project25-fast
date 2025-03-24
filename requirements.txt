@@ -1,11 +1,12 @@
 fastapi
 uvicorn
-sqlalchemy==1.4.23
+sqlalchemy>=2.0.0
 psycopg2-binary  # PostgreSQL과 연결할 때 필요
 pytz
 pytest
 python-dotenv
 email-validator
 asyncpg
+greenlet>=2.0.0  # SQLAlchemy 비동기 지원에 필요
 
 

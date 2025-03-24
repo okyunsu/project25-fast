@@ -120,8 +120,6 @@ class AsyncDatabase:
 
 
 async def get_db():
-    global db
-
     # .env 파일 강제 로드
     load_dotenv()
 
@@ -134,13 +132,31 @@ async def get_db():
 
     print(f"✅ db_singleton 초기화 확인: {db_singleton.db_url}")  # Debug 로그
 
-    builder = DatabaseBuilder()
-    db = await builder.build()
+    # PostgreSQL URL을 asyncpg 형식으로 변환
+    if db_singleton.db_url.startswith('postgresql://'):
+        db_singleton.db_url = db_singleton.db_url.replace('postgresql://', 'postgresql+asyncpg://')
 
-    try:
-        yield db  # ✅ FastAPI의 Depends()에서 사용할 수 있도록 yield로 반환
-    finally:
-        await db.close()
+    if not hasattr(db_singleton, 'engine'):
+        db_singleton.engine = create_async_engine(
+            db_singleton.db_url,
+            echo=True,
+            future=True
+        )
+        db_singleton.async_session = sessionmaker(
+            db_singleton.engine,
+            class_=AsyncSession,
+            expire_on_commit=False
+        )
+
+    async with db_singleton.async_session() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception as e:
+            await session.rollback()
+            raise e
+        finally:
+            await session.close()
 
 
 # ✅ 4. 초기화 함수 (비동기 DB 테이블 생성)

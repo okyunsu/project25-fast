@@ -39,8 +39,8 @@ class DataBaseSingleton():
 
 
         # ✅ 환경 변수 검증
-        if None in (self.db_username, self.db_password, self.db_database):
-            raise ValueError("⚠️ Database 환경 변수가 설정되지 않았습니다.")
+        # if None in (self.db_username, self.db_password, self.db_database):
+        #     raise ValueError("⚠️ Database 환경 변수가 설정되지 않았습니다.")
 
         # ✅ PostgreSQL에 맞는 URL 형식
         self.db_url = f"postgresql://{self.db_username}:{self.db_password}@{self.db_hostname}:{self.db_port}/{self.db_database}"

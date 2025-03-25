@@ -10,19 +10,14 @@ async def get_all_customer(db: AsyncSession):
         result = await db.execute(query)
         records = result.fetchall()
         
-        # 리스트 대신 딕셔너리로 변환
-        customers_dict = {}
+        # 결과를 딕셔너리 리스트로 변환
+        customers_list = []
         for record in records:
-            # Row 객체를 딕셔너리로 변환
-            customer = dict(zip(record.keys(), record))
-            if "user_id" in customer:
-                customers_dict[customer["user_id"]] = customer
-            else:
-                # user_id가 없는 경우 대체 키 사용
-                key = customer.get("id") or str(len(customers_dict))
-                customers_dict[key] = customer
+            # _mapping을 사용하여 Row 객체를 딕셔너리로 변환
+            customer = dict(record._mapping)
+            customers_list.append(customer)
             
-        return customers_dict
+        return customers_list
     except Exception as e:
         print("⚠️ 데이터 조회 중 오류 발생:", str(e))
         return {"error": str(e)}

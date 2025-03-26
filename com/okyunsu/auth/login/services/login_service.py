@@ -18,41 +18,19 @@ class LoginService(AbstractService):
                     message="로그인 데이터가 필요합니다."
                 )
 
-            try:
-                # login_data를 LoginRequest로 변환
-                if isinstance(login_data, dict):
-                    login_data = LoginRequest(**login_data)
-            except Exception as e:
-                print(f"[ERROR] Invalid login data: {e}")
-                return LoginResponse(
-                    success=False,
-                    message="아이디와 비밀번호를 입력해주세요."
-                )
-            
-            # 로그인 쿼리 실행
+            # 1단계: 로그인 시도
             query, params = login_repository.get_login_query(login_data)
             result = await db.execute(query, params)
             user = result.first()
             
             if not user:
-                # 사용자 존재 여부 확인
-                user_query, user_params = login_repository.get_user_query(login_data.user_id)
-                user_result = await db.execute(user_query, user_params)
-                user_exists = user_result.first()
-                
-                print("🎯🎯🎯🎯login result : None")
-                
-                if not user_exists:
-                    return LoginResponse(
-                        success=False,
-                        message="존재하지 않는 사용자입니다."
-                    )
                 return LoginResponse(
                     success=False,
-                    message="비밀번호가 일치하지 않습니다."
+                    message="아이디 또는 비밀번호가 일치하지 않습니다."
                 )
-            
-            result = LoginResponse(
+
+            # 2단계: 로그인 성공
+            response = LoginResponse(
                 success=True,
                 message="로그인 성공",
                 user_id=user.user_id,
@@ -60,8 +38,8 @@ class LoginService(AbstractService):
                 token="dummy_token"
             )
             
-            print("🎯🎯🎯🎯login result : ", result)
-            return result
+            print("🎯🎯🎯🎯login result : ", response)
+            return response
             
         except Exception as e:
             print(f"[ERROR] Login failed: {e}")

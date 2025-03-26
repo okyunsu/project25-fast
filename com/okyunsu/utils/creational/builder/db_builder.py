@@ -2,19 +2,22 @@ import asyncpg
 import os
 from dotenv import load_dotenv
 from com.okyunsu.utils.creational.builder.query_builder import QueryBuilder
-from com.okyunsu.utils.creational.singleton import db_singleton
+from com.okyunsu.utils.creational.singleton.db_singleton import get_db_singleton
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
 # Async Database Builder
 class DatabaseBuilder:
     def __init__(self):
-        if not hasattr(db_singleton, "db_url"):
+        # 싱글톤 인스턴스 가져오기
+        self.db_singleton = get_db_singleton()
+        
+        if not hasattr(self.db_singleton, "db_url"):
             raise AttributeError("⚠️ db_singleton 인스턴스에 'db_url' 속성이 존재하지 않습니다.")
         
-        print(f"✅ Initializing DatabaseBuilder... db_url: {db_singleton.db_url}")  # 디버깅
+        print(f"✅ Initializing DatabaseBuilder... db_url: {self.db_singleton.db_url}")  # 디버깅
 
-        self.database_url = db_singleton.db_url
+        self.database_url = self.db_singleton.db_url
         self.min_size = 1
         self.max_size = 10
         self.timeout = 60
@@ -123,14 +126,8 @@ async def get_db():
     # .env 파일 강제 로드
     load_dotenv()
 
-    # if not hasattr(db_singleton, "db_url") or not db_singleton.db_url:
-    #     print("⚠️ db_singleton이 올바르게 초기화되지 않았습니다. 환경 변수를 다시 로드합니다.")
-    #     db_singleton.db_url = os.getenv("DB_URL")
-        
-    #     if not db_singleton.db_url:
-    #         raise AttributeError("❌ 환경 변수를 다시 로드했지만 'db_url'이 설정되지 않았습니다. .env 파일을 확인하세요.")
-
-    # print(f"✅ db_singleton 초기화 확인: {db_singleton.db_url}")  # Debug 로그
+    # 싱글톤 인스턴스 가져오기
+    db_singleton = get_db_singleton()
 
     # PostgreSQL URL을 asyncpg 형식으로 변환
     if db_singleton.db_url.startswith('postgresql://'):

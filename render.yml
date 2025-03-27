@@ -9,3 +9,7 @@ services:
     dockerContext: .
     dockerfilePath: ./Dockerfile
     healthCheckPath: /
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://myuser:mypass@database:5432/mydb
+

@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from typing import Callable
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from pytz import timezone
@@ -9,6 +10,8 @@ from com.okyunsu.auth.auth_router import router as auth_router
 # python -m uvicorn main:app --reload   faskapi 실행
 # http://127.0.0.1:8000/
 
+
+load_dotenv()
 
 app = FastAPI()
 app.include_router(app_router, prefix="/api")

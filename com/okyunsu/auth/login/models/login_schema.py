@@ -12,7 +12,8 @@ class LoginRequest(BaseModel):
 class LoginResponse(BaseModel):
     success: bool
     message: str
-    token: str | None = None
     user_id: str | None = None
     name: str | None = None
+    access_token: str | None = None
+    refresh_token: str | None = None
 

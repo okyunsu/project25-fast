@@ -9,4 +9,4 @@ email-validator
 asyncpg
 greenlet>=2.0.0  # SQLAlchemy 비동기 지원에 필요
 python-jose[cryptography]==3.3.0
-
+redis>=5.0.1  # Redis 비동기 지원

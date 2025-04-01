@@ -3,6 +3,11 @@ from com.okyunsu.utils.creational.abstract.abstract_service import AbstractServi
 from com.okyunsu.auth.login.models.login_schema import LoginRequest, LoginResponse
 from com.okyunsu.auth.login.repository import login_repository
 from com.okyunsu.utils.config.security.jwt_config import TokenUtils
+from com.okyunsu.utils.config.security.redis_config import RedisConfig
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class LoginService(AbstractService):
     async def handle(self, **kwargs):
@@ -45,7 +50,14 @@ class LoginService(AbstractService):
             access_token = TokenUtils.create_access_token(user.user_id, user.name)
             refresh_token = TokenUtils.create_refresh_token(user.user_id, user.name)
 
-            # 4단계: 로그인 성공
+            # 4단계: Redis에 Refresh Token 저장
+            await RedisConfig.set_refresh_token(
+                user_id=user.user_id,
+                refresh_token=refresh_token,
+                expire_days=int(os.getenv("JWT_REFRESH_TOKEN_EXPIRE_DAYS", 7))
+            )
+
+            # 5단계: 로그인 성공
             response = LoginResponse(
                 success=True,
                 message="로그인 성공",
